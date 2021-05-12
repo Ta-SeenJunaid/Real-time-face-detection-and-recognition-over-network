@@ -3,6 +3,8 @@ import face_recognition
 import imagezmq
 import numpy as np
 import os
+from datetime import datetime
+
 
 path = 'image_attendance'
 images = []
@@ -55,7 +57,16 @@ def find_encodings(images):
 
 
 def mark_attendance(name):
-    pass
+    with open('attendance.csv', 'r+') as f:
+        my_data_list = f.readlines()
+        name_list = []
+        for line in my_data_list:
+            entry = line.split(',')
+            name_list.append(entry[0])
+        if name not in name_list:
+            now = datetime.now()
+            dt_string = now.strftime('%H:%M:%S')
+            f.writelines(f'\n{name},{dt_string}')
 
 encode_list_known = find_encodings(images)
 print('Encoding Complete')
