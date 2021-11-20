@@ -18,13 +18,27 @@ if __name__ == "__main__":
                         type=str,
                         default='tcp://0.0.0.0:5555')
 
+    parser.add_argument('--host_camera_type', required=False,
+                        help='please provide the host camera type, '
+                             '\'Pi Camera\' or \'Source Camera\', '
+                             'example 1: --host_camera_type \'pi_camera\', '
+                             'example 1: --host_camera_type \'source_camera\', '
+                             'default=\'source_camera\'',
+                        type=str,
+                        default='source_camera')
+
     args = parser.parse_args()
 
     # use your own receiver_server address
     sender = imagezmq.ImageSender(connect_to=args.receiver_ip)
 
     sender_name = socket.gethostname()
-    cam = VideoStream(0).start()
+
+    if args.host_camera_type == 'source_camera':
+        cam = VideoStream(0).start()
+    elif args.host_camera_type == 'pi_camera':
+        cam = VideoStream(usePiCamera=True).start()
+
     time.sleep(2.0)
     while True:
         image = cam.read()
